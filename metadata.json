@@ -1,0 +1,6 @@
+{
+  "name": "AI Employee Office",
+  "description": "Virtual office dashboard with 3D AI employee agents collaborating to complete tasks, powered by Gemini and multi-provider architecture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

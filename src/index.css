@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Smooth floating / bobbing animations with phase offsets */
+  @keyframes officeFloat1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(0.5deg); }
+  }
+  @keyframes officeFloat2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(-0.5deg); }
+  }
+  @keyframes officeFloat3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(0.3deg); }
+  }
+  @keyframes officeFloat4 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-5.5px) rotate(-0.4deg); }
+  }
+  @keyframes officeFloat5 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-4.5px) rotate(0.4deg); }
+  }
+
+  /* Rapid typing hands animation */
+  @keyframes officeTypingL {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-2px) rotate(-2deg); }
+  }
+  @keyframes officeTypingR {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-2.5px) rotate(2deg); }
+  }
+
+  /* Walking Leg step animation */
+  @keyframes walkStepL {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(-15deg); }
+  }
+  @keyframes walkStepR {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-4px) rotate(15deg); }
+  }
+  @keyframes walkBobbing {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* Screen code lines scanning */
+  @keyframes screenScan {
+    0% { transform: translateY(-100%); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+
+  /* Floating ideation / thought spark */
+  @keyframes floatSpark {
+    0% { transform: translateY(0px) scale(0.6); opacity: 0; }
+    30% { opacity: 1; transform: translateY(-8px) scale(1); }
+    100% { transform: translateY(-22px) scale(0.4); opacity: 0; }
+  }
+
+  /* Steam rising from coffee */
+  @keyframes steamRise {
+    0% { transform: translateY(0) scaleX(1); opacity: 0.8; }
+    50% { transform: translateY(-6px) scaleX(1.3); opacity: 0.4; }
+    100% { transform: translateY(-12px) scaleX(0.8); opacity: 0; }
+  }
+
+  /* Radar / holographic sweep across office floor */
+  @keyframes radarSweep {
+    0% { transform: translateX(-100%) rotate(25deg); opacity: 0; }
+    30% { opacity: 0.15; }
+    70% { opacity: 0.15; }
+    100% { transform: translateX(200%) rotate(25deg); opacity: 0; }
+  }
+
+  /* Blinking server LED */
+  @keyframes ledBlink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+
+  /* Pulse underglow */
+  @keyframes deskGlow {
+    0%, 100% { opacity: 0.3; transform: scale(0.98); }
+    50% { opacity: 0.7; transform: scale(1.04); }
+  }
+}
+
+.animate-float-1 { animation: officeFloat1 3.2s ease-in-out infinite; }
+.animate-float-2 { animation: officeFloat2 2.8s ease-in-out infinite; }
+.animate-float-3 { animation: officeFloat3 3.6s ease-in-out infinite; }
+.animate-float-4 { animation: officeFloat4 3.0s ease-in-out infinite; }
+.animate-float-5 { animation: officeFloat5 3.4s ease-in-out infinite; }
+
+.animate-type-l { animation: officeTypingL 0.28s ease-in-out infinite; }
+.animate-type-r { animation: officeTypingR 0.32s ease-in-out infinite; }
+
+.animate-walk-l { animation: walkStepL 0.35s ease-in-out infinite; }
+.animate-walk-r { animation: walkStepR 0.35s ease-in-out infinite 0.175s; }
+.animate-walk-bob { animation: walkBobbing 0.35s ease-in-out infinite; }
+
+.animate-screen-scan { animation: screenScan 2s linear infinite; }
+.animate-spark-1 { animation: floatSpark 2.4s ease-out infinite; }
+.animate-spark-2 { animation: floatSpark 2.4s ease-out infinite 0.8s; }
+.animate-spark-3 { animation: floatSpark 2.4s ease-out infinite 1.6s; }
+
+.animate-steam-1 { animation: steamRise 2s ease-out infinite; }
+.animate-steam-2 { animation: steamRise 2s ease-out infinite 1s; }
+
+.animate-radar-sweep { animation: radarSweep 6s ease-in-out infinite; }
+.animate-led-fast { animation: ledBlink 0.6s infinite; }
+.animate-led-slow { animation: ledBlink 1.4s infinite; }
+.animate-desk-glow { animation: deskGlow 2.5s ease-in-out infinite; }

@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Users collection (PII isolation)
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) 
+        && incoming().id == userId
+        && incoming().email is string && incoming().email.size() <= 256
+        && incoming().displayName is string && incoming().displayName.size() <= 128;
+      allow update: if isOwner(userId)
+        && incoming().id == existing().id
+        && incoming().displayName is string && incoming().displayName.size() <= 128;
+      allow delete: if isOwner(userId);
+    }
+
+    // Tasks collection
+    match /tasks/{taskId} {
+      allow get: if isSignedIn() && isValidId(taskId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(taskId)
+        && incoming().userId == request.auth.uid
+        && incoming().title is string && incoming().title.size() <= 256
+        && incoming().description is string && incoming().description.size() <= 5000
+        && incoming().status in ['pending', 'in_progress', 'completed', 'failed'];
+      allow update: if isSignedIn() && isValidId(taskId)
+        && existing().userId == request.auth.uid
+        && incoming().userId == existing().userId
+        && incoming().title is string && incoming().title.size() <= 256
+        && incoming().status in ['pending', 'in_progress', 'completed', 'failed'];
+      allow delete: if isSignedIn() && isValidId(taskId) && existing().userId == request.auth.uid;
+    }
+
+    // Agents collection
+    match /agents/{agentId} {
+      allow get: if isSignedIn() && isValidId(agentId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(agentId)
+        && incoming().userId == request.auth.uid
+        && incoming().name is string && incoming().name.size() <= 128
+        && incoming().role is string && incoming().role.size() <= 128;
+      allow update: if isSignedIn() && isValidId(agentId)
+        && existing().userId == request.auth.uid
+        && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && isValidId(agentId) && existing().userId == request.auth.uid;
+    }
+
+    // Activity log collection (immutable append-only)
+    match /activity/{activityId} {
+      allow get: if isSignedIn() && isValidId(activityId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(activityId)
+        && incoming().userId == request.auth.uid
+        && incoming().agentName is string && incoming().agentName.size() <= 128;
+      allow update: if false;
+      allow delete: if isSignedIn() && isValidId(activityId) && existing().userId == request.auth.uid;
+    }
+  }
+}
