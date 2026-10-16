@@ -408,6 +408,9 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
   const cameraAngleRef = useRef({ theta: 0.54, phi: 0.74, radius: 82 });
   const isDraggingRef = useRef(false);
   const prevMouseRef = useRef({ x: 0, y: 0 });
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const pinchDistRef = useRef<number | null>(null);
+  const isTouchDraggingRef = useRef(false);
   const targetLookAtRef = useRef(new THREE.Vector3(0, 3.5, 6));
   const currentLookAtRef = useRef(new THREE.Vector3(0, 3.5, 6));
 
@@ -2798,45 +2801,109 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
     updateCameraPosition();
   };
 
+  // Touch Orbit & Pinch Zoom for Mobile Phones & Tablets
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      pinchDistRef.current = null;
+      isTouchDraggingRef.current = true;
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchDistRef.current = dist;
+      touchStartRef.current = null;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && touchStartRef.current && isTouchDraggingRef.current) {
+      const dx = e.touches[0].clientX - touchStartRef.current.x;
+      const dy = e.touches[0].clientY - touchStartRef.current.y;
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+
+      cameraAngleRef.current.theta -= dx * 0.008;
+      cameraAngleRef.current.phi = Math.max(0.12, Math.min(Math.PI / 2 - 0.05, cameraAngleRef.current.phi - dy * 0.008));
+      updateCameraPosition();
+    } else if (e.touches.length === 2 && pinchDistRef.current !== null) {
+      const newDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const diff = pinchDistRef.current - newDist;
+      pinchDistRef.current = newDist;
+
+      const zoomDelta = diff * 0.18;
+      const newR = Math.max(4.2, Math.min(135, cameraAngleRef.current.radius + zoomDelta));
+      cameraAngleRef.current.radius = newR;
+      setZoomLevelPercent(radiusToPercent(newR));
+      updateCameraPosition();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchStartRef.current = null;
+    pinchDistRef.current = null;
+    isTouchDraggingRef.current = false;
+  };
+
+  // Mobile On-Screen Controls
+  const handleMobileRotate = (direction: 'left' | 'right' | 'up' | 'down') => {
+    const stepAngle = 0.28;
+    if (direction === 'left') {
+      cameraAngleRef.current.theta += stepAngle;
+    } else if (direction === 'right') {
+      cameraAngleRef.current.theta -= stepAngle;
+    } else if (direction === 'up') {
+      cameraAngleRef.current.phi = Math.max(0.12, cameraAngleRef.current.phi - 0.16);
+    } else if (direction === 'down') {
+      cameraAngleRef.current.phi = Math.min(Math.PI / 2 - 0.05, cameraAngleRef.current.phi + 0.16);
+    }
+    updateCameraPosition();
+  };
+
+  const handleResetCamera = () => {
+    applyCameraPreset('all');
+  };
+
   return (
     <div className="relative w-full rounded-2xl bg-white border border-slate-200/90 shadow-xl overflow-hidden">
       
       {/* Top Header & Command Strip */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-slate-900 text-white border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 via-green-600 to-teal-400 text-white shadow-md shadow-emerald-500/20">
-            <Gem className="h-5 w-5 animate-pulse" />
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-900 text-white border-b border-slate-800">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 via-green-600 to-teal-400 text-white shadow-md shadow-emerald-500/20 shrink-0">
+            <Gem className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <span>Kantor The Sims (Sangat Lengkap • Kantor Serasa Rumah)</span>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
-                  <span>🏡 Serasa Rumah</span>
-                  <span>•</span>
-                  <span>💎 Anti-Nembus Tembok</span>
-                </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h2 className="text-sm sm:text-lg font-bold tracking-tight text-white truncate">
+                Kantor The Sims (Serasa Rumah)
               </h2>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0 hidden xs:inline-flex items-center gap-1">
+                <span>🏡 Serasa Rumah</span>
+              </span>
             </div>
-            <p className="text-xs text-slate-400 hidden sm:block">
-              Fasilitas super lengkap serasa rumah: Meja makan keluarga & keranjang buah, laundry pakaian, daybed tidur siang, piringan hitam vinyl & gitar, sudut kucing peliharaan, serta patio BBQ kebun luar.
+            <p className="text-[11px] text-slate-400 hidden md:block truncate">
+              Fasilitas lengkap: Meja makan, laundry, daybed siang, piringan vinyl, kucing kantor, dan BBQ kebun.
             </p>
           </div>
         </div>
 
-        {/* Action Direct Command Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Action Direct Command Buttons - Swipeable on Mobile */}
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1 sm:pb-0 sm:flex-wrap no-scrollbar shrink-0">
           <button
             onClick={() => setAutoPatrolEnabled(prev => !prev)}
             type="button"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 ${
               autoPatrolEnabled 
                 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20' 
                 : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
             }`}
             title="Aktifkan atau jeda agen bergerak aktif mondar-mandir secara otomatis"
           >
-            {autoPatrolEnabled ? <Play className="h-3.5 w-3.5 fill-current" /> : <Pause className="h-3.5 w-3.5" />}
+            {autoPatrolEnabled ? <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-current" /> : <Pause className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
             <span>{autoPatrolEnabled ? 'Mondar-Mandir: AKTIF' : 'Mondar-Mandir: JEDA'}</span>
           </button>
 
@@ -2974,9 +3041,9 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
       </div>
 
       {/* Camera View Switcher Bar (Includes All New Rooms) */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-slate-800/95 border-b border-slate-700/80 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
-          <span className="text-slate-400 font-semibold shrink-0 text-[11px] mr-1">🎥 Sorot Ruangan:</span>
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1.5 px-3 sm:px-4 py-2 bg-slate-800/95 border-b border-slate-700/80 text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5 no-scrollbar shrink-0">
+          <span className="text-slate-400 font-semibold shrink-0 text-[10px] sm:text-[11px] mr-1">🎥 Sorot:</span>
           {(Object.keys(CAMERA_PRESETS) as CameraPresetKey[]).map((key) => {
             const item = CAMERA_PRESETS[key];
             const isActive = activePreset === key;
@@ -2984,7 +3051,7 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
               <button
                 key={key}
                 onClick={() => applyCameraPreset(key)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all shrink-0 ${
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all shrink-0 ${
                   isActive
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-700/70 hover:bg-slate-700 text-slate-300'
@@ -2998,40 +3065,40 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
         </div>
 
         {/* Viewport Height & Plumbob Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0">
           <button
             onClick={() => setPlumbobGlow(prev => !prev)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all ${
               plumbobGlow 
                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' 
                 : 'bg-slate-700 text-slate-400'
             }`}
             title="Nyalakan/matikan pendaran kristal Plumbob The Sims"
           >
-            <Gem className="h-3.5 w-3.5 text-emerald-400" />
-            <span>{plumbobGlow ? 'Plumbob: Bersinar' : 'Plumbob: Redup'}</span>
+            <Gem className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-400" />
+            <span className="hidden xs:inline">{plumbobGlow ? 'Plumbob: On' : 'Plumbob: Off'}</span>
           </button>
 
           <button
             onClick={() => setIsExpandedHeight(prev => !prev)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-700 text-slate-200 hover:bg-slate-600 transition-all"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-slate-700 text-slate-200 hover:bg-slate-600 transition-all"
             title={isExpandedHeight ? 'Kembalikan tinggi standar' : 'Perluas tinggi tampilan layar'}
           >
-            {isExpandedHeight ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+            {isExpandedHeight ? <Minimize2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : <Maximize2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
             <span className="hidden sm:inline">{isExpandedHeight ? 'Tinggi Standar' : 'Perluas Layar (Panorama)'}</span>
           </button>
 
           <button
             onClick={() => setBubbleMode(prev => prev === 'focused' ? 'all' : 'focused')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all ${
               bubbleMode === 'focused' 
                 ? 'bg-slate-700 text-cyan-300 border border-cyan-500/40' 
                 : 'bg-blue-600 text-white'
             }`}
             title="Ubah tampilan balon teks agar layar bersih dan tidak bertumpuk"
           >
-            {bubbleMode === 'focused' ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span>{bubbleMode === 'focused' ? '💬 Balon: Rapi' : '💬 Balon: Semua'}</span>
+            {bubbleMode === 'focused' ? <EyeOff className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
+            <span>{bubbleMode === 'focused' ? 'Balon: Rapi' : 'Balon: Semua'}</span>
           </button>
         </div>
       </div>
@@ -3039,27 +3106,38 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
       {/* 3D WebGL Canvas Arena */}
       <div
         ref={containerRef}
+        id="office-3d-viewport"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
-        className={`relative w-full transition-all duration-300 bg-sky-100/40 cursor-grab active:cursor-grabbing overflow-hidden select-none ${
-          isExpandedHeight ? 'h-[850px] lg:h-[950px]' : 'h-[640px] sm:h-[720px] lg:h-[820px]'
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`relative w-full transition-all duration-300 bg-sky-100/40 cursor-grab active:cursor-grabbing overflow-hidden select-none touch-none ${
+          isExpandedHeight 
+            ? 'h-[75vh] sm:h-[720px] lg:h-[950px]' 
+            : 'h-[320px] xs:h-[380px] sm:h-[560px] md:h-[680px] lg:h-[820px]'
         }`}
       >
-        {/* Top-Left Floating Clean Info Pill */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 pointer-events-none">
+        {/* Mobile Touch Gesture Tip */}
+        <div className="sm:hidden absolute bottom-2.5 left-2.5 z-20 pointer-events-none px-2.5 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md text-slate-200 border border-slate-700/60 text-[9px] font-medium shadow-md">
+          👆 1 Jari: Putar 360° • 🤏 2 Jari: Zoom
+        </div>
+
+        {/* Top-Left Floating Info Pill - Desktop */}
+        <div className="hidden sm:flex absolute top-4 left-4 z-20 flex-col gap-1.5 pointer-events-none max-w-md">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 text-[11px] text-slate-700 shadow-md">
-            <Compass className="h-3.5 w-3.5 text-emerald-600" />
-            <span>Jalur Koridor Bebas Halangan • Karakter Berjalan Lewat Pintu & Lorong (Anti-Tembus Tembok)</span>
+            <Compass className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <span className="truncate">Jalur Bebas Halangan • Karakter Berjalan Lewat Lorong (Anti-Tembus Tembok)</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="px-2.5 py-0.5 rounded-md bg-amber-600 text-white text-[10px] font-extrabold shadow-xs">
-              🌟 L2: Suite CEO Alex & Lab AI Dr. Maya (2 Ruangan Aja)
+              🌟 L2: CEO & Lab AI
             </span>
-            <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-extrabold shadow-xs">
-              🏡 L1: Meja Makan Keluarga • Nap Daybed • Musik Vinyl • Kucing Kantor • BBQ Garden • Galon Air • Foosball
+            <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-extrabold shadow-xs truncate max-w-xs">
+              🏡 L1: Meja Makan • Nap Daybed • Vinyl • BBQ Garden
             </span>
           </div>
         </div>
@@ -3068,39 +3146,39 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
         {activeTask && activeTask.status === 'in_progress' && (() => {
           const activeStep = activeTask.steps.find(s => s.status === 'running') || activeTask.steps[0];
           return (
-            <div className="absolute top-20 left-4 z-20 flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-900/95 text-white border border-blue-500/60 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-blue-400 animate-ping shrink-0" />
-              <div className="text-left">
+            <div className="absolute top-3 sm:top-20 left-3 sm:left-4 z-20 flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/95 text-white border border-blue-500/60 shadow-2xl backdrop-blur-md max-w-[calc(100vw-1.5rem)] sm:max-w-md animate-in fade-in">
+              <span className="flex h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-blue-400 animate-ping shrink-0" />
+              <div className="text-left min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-blue-600 text-white uppercase tracking-wider">
-                    Sedang Diproses
+                  <span className="text-[9px] sm:text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-blue-600 text-white uppercase tracking-wider shrink-0">
+                    Proses
                   </span>
-                  <span className="text-xs font-bold text-white truncate max-w-[180px] sm:max-w-xs">
+                  <span className="text-[11px] sm:text-xs font-bold text-white truncate">
                     {activeTask.title}
                   </span>
                 </div>
                 {activeStep && (
-                  <p className="text-[11px] text-blue-200 mt-0.5 font-medium">
-                    Karyawan: <span className="font-bold text-amber-300">{activeStep.agentName}</span> ({activeStep.stageName})
+                  <p className="text-[10px] sm:text-[11px] text-blue-200 mt-0.5 font-medium truncate">
+                    Karyawan: <span className="font-bold text-amber-300">{activeStep.agentName}</span>
                   </p>
                 )}
               </div>
               {activeStep && (
                 <button
                   onClick={() => zoomToAgentDesk(activeStep.agentId, 'super')}
-                  className="ml-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/30 transition-all active:scale-95 shrink-0"
                   title="Arahkan kamera 3D super dekat ke meja agen dan pantau apa yang sedang dikerjakannya!"
                 >
-                  <ZoomIn className="h-3.5 w-3.5" />
-                  <span>🔍 Zoom Meja & Layar Kerja</span>
+                  <ZoomIn className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden xs:inline">Zoom Meja</span>
                 </button>
               )}
             </div>
           );
         })()}
 
-        {/* Top-Right Dedicated Zoom Panel */}
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-lg">
+        {/* Top-Right Dedicated Zoom Panel - Desktop */}
+        <div className="hidden md:flex absolute top-4 right-4 z-20 items-center gap-1 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-lg">
           <span className="text-[11px] font-bold text-slate-600 px-2 flex items-center gap-1">
             <span>🔍 Zoom:</span>
             <span className="font-mono text-emerald-600 font-extrabold">{zoomLevelPercent}%</span>
@@ -3149,8 +3227,8 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
           </div>
         </div>
 
-        {/* Bottom-Right Floating Stepped Zoom Controls & Reset View */}
-        <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-xl">
+        {/* Bottom-Right Floating Stepped Zoom Controls & Reset View - Desktop */}
+        <div className="hidden sm:flex absolute bottom-4 right-4 z-20 items-center gap-1.5 bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-xl">
           <button
             onClick={() => handleStepZoom(-10)}
             className="p-2 text-slate-700 hover:text-emerald-600 rounded-xl hover:bg-slate-100 transition-colors"
@@ -3290,6 +3368,97 @@ export const Office3DScene: React.FC<Office3DSceneProps> = ({
             />
           );
         })()}
+        {/* Floating Ergonomic Mobile Touch Controls HUD */}
+        <div className="absolute right-3 top-20 sm:top-24 z-20 flex flex-col gap-2">
+          {/* Zoom In */}
+          <button
+            onClick={() => handleStepZoom(25)}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-blue-600 active:scale-90"
+            title="Perbesar Tampilan (Zoom In)"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </button>
+
+          {/* Zoom Out */}
+          <button
+            onClick={() => handleStepZoom(-25)}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-blue-600 active:scale-90"
+            title="Perkecil Tampilan (Zoom Out)"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </button>
+
+          {/* Rotate Left */}
+          <button
+            onClick={() => handleMobileRotate('left')}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-slate-800 active:scale-90"
+            title="Putar Sudut Kamera ke Kiri"
+          >
+            <span className="text-sm font-bold">↶</span>
+          </button>
+
+          {/* Rotate Right */}
+          <button
+            onClick={() => handleMobileRotate('right')}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-slate-800 active:scale-90"
+            title="Putar Sudut Kamera ke Kanan"
+          >
+            <span className="text-sm font-bold">↷</span>
+          </button>
+
+          {/* Reset View */}
+          <button
+            onClick={handleResetCamera}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-emerald-600 active:scale-90"
+            title="Kembalikan Sudut Pandang Standar"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Toggle Viewport Height (Mobile Friendly Expand) */}
+          <button
+            onClick={() => setIsExpandedHeight(prev => !prev)}
+            className="h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-slate-900/90 text-white backdrop-blur-md border border-slate-700/80 shadow-lg flex items-center justify-center transition-all hover:bg-indigo-600 active:scale-90"
+            title={isExpandedHeight ? 'Kecilkan Tinggi Layar' : 'Perluas Tinggi Layar'}
+          >
+            {isExpandedHeight ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile-First Quick Employee Bar: Tap any employee on mobile to instantly glide to their desk */}
+      <div className="p-2 sm:p-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-2 overflow-x-auto select-none">
+        <span className="text-[11px] font-bold text-slate-400 shrink-0 flex items-center gap-1 pl-1">
+          <span>📱 Sorot Meja:</span>
+        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {agents.map((ag) => {
+            const isSelected = selectedAgentId === ag.id;
+            return (
+              <button
+                key={ag.id}
+                onClick={() => {
+                  setSelectedAgentId(ag.id);
+                  onSelectAgent(ag);
+                  zoomToAgentDesk(ag.id, 'super');
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 ${
+                  isSelected
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 ring-2 ring-blue-400'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80'
+                }`}
+              >
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: ag.color }} />
+                <span>{ag.name.split(' ')[0]}</span>
+                {ag.apiEngine && (
+                  <span className="text-[9px] text-slate-400 font-mono hidden xs:inline">
+                    {ag.apiEngine.icon}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

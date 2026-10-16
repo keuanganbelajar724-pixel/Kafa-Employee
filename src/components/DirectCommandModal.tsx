@@ -290,7 +290,7 @@ export const DirectCommandModal: React.FC<DirectCommandModalProps> = ({
     return (
       <aside 
         aria-label="Status Pengerjaan Karyawan Virtual"
-        className="fixed bottom-5 right-5 z-50 max-w-sm w-[92vw] sm:w-[400px] rounded-2xl bg-slate-950/90 text-white border border-slate-700/60 shadow-2xl backdrop-blur-2xl p-4 animate-in slide-in-from-bottom-5 fade-in ring-1 ring-white/10 select-none transition-all"
+        className="fixed bottom-18 sm:bottom-5 left-3 right-3 sm:left-auto sm:right-5 sm:w-[400px] z-50 rounded-2xl bg-slate-950/95 text-white border border-slate-700/60 shadow-2xl backdrop-blur-2xl p-3 sm:p-4 animate-in slide-in-from-bottom-5 fade-in ring-1 ring-white/10 select-none transition-all"
       >
         {/* Top Header */}
         <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
@@ -406,38 +406,38 @@ export const DirectCommandModal: React.FC<DirectCommandModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-auto sm:my-6 max-h-[92vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-sky-50">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
-              <Zap className="h-5 w-5" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-sky-50 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 shrink-0">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-extrabold text-slate-900">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h3 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
                   Konsol Perintah Karyawan AI
                 </h3>
-                <span className="flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 border border-emerald-300">
+                <span className="flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 border border-emerald-300 shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  API Gemini Gratis
+                  API Gratis
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-[11px] text-slate-500 hidden xs:block truncate">
                 Pilih karyawan sesuai keahliannya, berikan mandat tugas, dan hasilkan laporan instan.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => setIsMinimized(true)}
               className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors flex items-center gap-1 text-xs font-semibold px-2"
               title="Kecilkan ke pojok layar agar bisa melihat kantor 3D"
             >
               <Minimize2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Kecilkan ke Pojok</span>
+              <span className="hidden sm:inline">Kecilkan</span>
             </button>
             <button
               onClick={onClose}
@@ -449,7 +449,7 @@ export const DirectCommandModal: React.FC<DirectCommandModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-5 max-h-[78vh] overflow-y-auto bg-white">
+        <div className="p-3.5 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1 bg-white">
           
           {/* Agent Picker Tabs with Individual Colors */}
           <div>

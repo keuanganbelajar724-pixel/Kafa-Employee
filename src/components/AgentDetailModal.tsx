@@ -50,17 +50,17 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-auto sm:my-6 max-h-[92vh] flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/80">
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-slate-200 bg-slate-50/80 shrink-0">
           <div className="flex items-center gap-2">
             <span 
-              className="w-3 h-3 rounded-full"
+              className="w-3 h-3 rounded-full shrink-0"
               style={{ backgroundColor: agent.color }}
             />
-            <h2 className="text-lg font-extrabold text-slate-900">Profil Karyawan AI Virtual</h2>
+            <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 truncate">Profil Karyawan AI Virtual</h2>
           </div>
           <button
             onClick={onClose}
@@ -71,7 +71,7 @@ export const AgentDetailModal: React.FC<AgentDetailModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-white">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 bg-white">
           
           {/* Top Hero Section */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-4 rounded-xl bg-slate-50 border border-slate-200">

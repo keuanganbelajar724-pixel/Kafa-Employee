@@ -488,35 +488,35 @@ export const OfficeSimulationRoom: React.FC<OfficeSimulationRoomProps> = ({
           <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
             <button
               onClick={() => setActiveFloorView(1)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold transition-all ${
                 activeFloorView === 1
                   ? 'bg-blue-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🏛️ L1: Dasar (Paling Luas)</span>
+              <span>🏛️ L1: Dasar</span>
             </button>
             <button
               onClick={() => setActiveFloorView(2)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold transition-all ${
                 activeFloorView === 2
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span>🌟 L2: Mezzanine (Ruang Khusus)</span>
+              <span>🌟 L2: Mezzanine</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Action Buttons to control roaming agents */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
-        <div className="flex flex-wrap items-center gap-1.5">
+      {/* Action Buttons to control roaming agents - Swipeable on mobile */}
+      <div className="flex items-center gap-1.5 overflow-x-auto max-w-full border-b border-slate-200 pb-2 sm:pb-3 sm:flex-wrap no-scrollbar">
+        <div className="flex items-center gap-1.5 shrink-0 sm:flex-wrap">
           <button
             onClick={triggerWaterGarden}
             type="button"
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-all shadow-xs"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-all shadow-xs shrink-0"
             title="Siram tanaman & rawat kebun bunga di halaman luas"
           >
             <span>🌱</span>

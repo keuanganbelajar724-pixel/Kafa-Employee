@@ -116,7 +116,7 @@ export const UnifiedAiSearchHub: React.FC<UnifiedAiSearchHubProps> = ({
   const activeAgentObj = agents.find(a => a.id === selectedTarget);
 
   return (
-    <div className="w-full rounded-2xl bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 shadow-md p-4 sm:p-5 transition-all">
+    <div id="unified-ai-search-hub" className="w-full rounded-2xl bg-gradient-to-b from-white to-slate-50 border border-slate-200/90 shadow-md p-4 sm:p-5 transition-all">
       
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">

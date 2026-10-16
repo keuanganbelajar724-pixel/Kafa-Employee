@@ -101,18 +101,18 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-auto sm:my-8 max-h-[92vh] flex flex-col">
         
         {/* Header Modal */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/70">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 border border-blue-200">
-              <Sparkles className="h-5 w-5" />
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-slate-200 bg-slate-50/70 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 border border-blue-200 shrink-0">
+              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <h2 className="text-lg font-extrabold text-slate-900">Delegasi Tugas Multi-Agent Baru</h2>
-              <p className="text-xs text-slate-500 font-medium">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 truncate">Delegasi Tugas Multi-Agent Baru</h2>
+              <p className="text-[11px] text-slate-500 font-medium hidden xs:block truncate">
                 Pekerjakan tim agen AI untuk menganalisis, menyusun kode/strategi, dan merilis laporan resmi.
               </p>
             </div>
@@ -127,18 +127,18 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         </div>
 
         {/* Quick Templates Bar */}
-        <div className="p-4 bg-blue-50/40 border-b border-slate-200">
-          <div className="flex items-center gap-2 mb-2 text-xs font-bold text-slate-700">
+        <div className="p-3 sm:p-4 bg-blue-50/40 border-b border-slate-200 shrink-0">
+          <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-slate-700">
             <Wand2 className="h-3.5 w-3.5 text-blue-600" />
             <span>Pilih Template Cepat Siap Pakai:</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {TEMPLATES.map((tpl, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => applyTemplate(tpl)}
-                className="text-xs px-3 py-1.5 rounded-lg bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 font-medium transition-all text-left shadow-2xs"
+                className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 font-medium transition-all text-left shadow-2xs"
               >
                 {tpl.title}
               </button>
@@ -147,7 +147,7 @@ export const TaskCreationModal: React.FC<TaskCreationModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* Title Input */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">

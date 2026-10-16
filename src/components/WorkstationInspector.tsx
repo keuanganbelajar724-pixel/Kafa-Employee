@@ -404,11 +404,13 @@ export const WorkstationInspector: React.FC<WorkstationInspectorProps> = ({
   }, [agent]);
 
   return (
-    <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[540px] lg:w-[620px] z-30 pointer-events-auto select-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
-      <div className="rounded-2xl bg-slate-900/95 text-white border border-blue-500/40 shadow-2xl backdrop-blur-xl overflow-hidden ring-1 ring-white/10">
+    <div className="absolute bottom-1 left-1 right-1 sm:bottom-4 sm:left-auto sm:right-4 sm:w-[540px] lg:w-[620px] z-30 pointer-events-auto select-none transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
+      <div className="rounded-2xl bg-slate-900/98 text-white border border-blue-500/40 shadow-2xl backdrop-blur-2xl overflow-hidden ring-1 ring-white/10 max-h-[76vh] sm:max-h-none flex flex-col">
+        {/* Mobile Pull Bar */}
+        <div className="sm:hidden w-10 h-1 rounded-full bg-slate-700 mx-auto mt-2 mb-0.5 shrink-0" />
         
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-800/90 border-b border-slate-700/80">
+        <div className="flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 bg-slate-800/90 border-b border-slate-700/80">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="relative shrink-0">
               <AgentAvatar3D agent={agent} size="sm" isWorking={true} />
@@ -487,7 +489,7 @@ export const WorkstationInspector: React.FC<WorkstationInspectorProps> = ({
             </button>
           </div>
         ) : (
-          <div className="p-3 space-y-3">
+          <div className="p-3 space-y-3 overflow-y-auto flex-1">
             
             {/* Camera Zoom Level Selector Bar */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs">
@@ -496,41 +498,41 @@ export const WorkstationInspector: React.FC<WorkstationInspectorProps> = ({
                 <span>Kamera Meja:</span>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 overflow-x-auto">
                 <button
                   onClick={() => onSetZoomLevel('super')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 shrink-0 ${
                     zoomLevel === 'super'
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
                       : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                   title="Super Zoom Makro: Kamera menatap layar komputer dan wajah karyawan langsung"
                 >
-                  <span>🔍 Makro Layar (4.5x)</span>
+                  <span>🔍 Makro (4.5x)</span>
                 </button>
 
                 <button
                   onClick={() => onSetZoomLevel('desk')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 shrink-0 ${
                     zoomLevel === 'desk'
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
                       : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                   title="Zoom Meja Kerja: Melihat seluruh meja, kursi, dan monitor"
                 >
-                  <span>🪑 Meja Kerja (2.5x)</span>
+                  <span>🪑 Meja (2.5x)</span>
                 </button>
 
                 <button
                   onClick={() => onSetZoomLevel('room')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all flex items-center gap-1 shrink-0 ${
                     zoomLevel === 'room'
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
                       : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                   title="Zoom Ruangan: Melihat seluruh ruangan departemen"
                 >
-                  <span>🏢 Ruangan (1x)</span>
+                  <span>🏢 Ruang (1x)</span>
                 </button>
               </div>
             </div>
@@ -554,22 +556,22 @@ export const WorkstationInspector: React.FC<WorkstationInspectorProps> = ({
             )}
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-1 border-b border-slate-700 pb-1.5 text-xs">
+            <div className="flex items-center gap-1 border-b border-slate-700 pb-1.5 text-xs overflow-x-auto">
               <button
                 onClick={() => setActiveTab('screen')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                   activeTab === 'screen'
                     ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Laptop className="h-3.5 w-3.5" />
-                <span>🖥️ Layar Monitor Virtual</span>
+                <span>🖥️ Layar Monitor</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('activity')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                   activeTab === 'activity'
                     ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40'
                     : 'text-slate-400 hover:text-white'
@@ -581,14 +583,14 @@ export const WorkstationInspector: React.FC<WorkstationInspectorProps> = ({
 
               <button
                 onClick={() => setActiveTab('specs')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all shrink-0 ${
                   activeTab === 'specs'
                     ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Cpu className="h-3.5 w-3.5" />
-                <span>⚙️ Spesifikasi & Status</span>
+                <span>⚙️ Spek Meja</span>
               </button>
             </div>
 

@@ -91,27 +91,27 @@ data = res.json()
 print("Laporan Agen:", data["output"])`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-auto sm:my-6 max-h-[92vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-500/20">
-              <Terminal className="h-5 w-5" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-sky-50 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-500/20 shrink-0">
+              <Terminal className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-extrabold text-slate-900">
-                  Dokumentasi & Playground API Gratis
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h3 className="text-sm sm:text-base font-extrabold text-slate-900 truncate">
+                  Dokumentasi & Playground API
                 </h3>
-                <span className="flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 border border-emerald-300">
+                <span className="flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 border border-emerald-300 shrink-0">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  REST API Siap Pakai
+                  REST API Gratis
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Panggil karyawan AI kantor virtual dari aplikasi luar, bot Telegram, webhook, atau script backend Anda secara gratis!
+              <p className="text-[11px] text-slate-500 hidden xs:block truncate">
+                Panggil karyawan AI kantor virtual dari aplikasi luar, webhook, atau script Anda!
               </p>
             </div>
           </div>
@@ -124,30 +124,30 @@ print("Laporan Agen:", data["output"])`;
         </div>
 
         {/* Tab Controls */}
-        <div className="flex items-center gap-2 px-6 pt-3 border-b border-slate-200 bg-slate-50 text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 pt-2.5 sm:pt-3 border-b border-slate-200 bg-slate-50 text-xs overflow-x-auto shrink-0 no-scrollbar">
           <button
             onClick={() => setActiveTab('endpoints')}
-            className={`px-3 py-2 font-bold border-b-2 transition-all ${
+            className={`px-2.5 sm:px-3 py-2 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'endpoints'
                 ? 'border-emerald-600 text-emerald-700'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
-            📋 Daftar Endpoint & Agen
+            📋 Endpoint & Agen
           </button>
           <button
             onClick={() => setActiveTab('tester')}
-            className={`px-3 py-2 font-bold border-b-2 transition-all ${
+            className={`px-2.5 sm:px-3 py-2 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'tester'
                 ? 'border-emerald-600 text-emerald-700'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
-            ⚡ Tester API Interaktif
+            ⚡ Tester API
           </button>
           <button
             onClick={() => setActiveTab('snippets')}
-            className={`px-3 py-2 font-bold border-b-2 transition-all ${
+            className={`px-2.5 sm:px-3 py-2 font-bold border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'snippets'
                 ? 'border-emerald-600 text-emerald-700'
                 : 'border-transparent text-slate-600 hover:text-slate-900'
@@ -158,7 +158,7 @@ print("Laporan Agen:", data["output"])`;
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-white">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 bg-white">
           
           {/* TAB 1: ENDPOINTS & DIRECTORY */}
           {activeTab === 'endpoints' && (

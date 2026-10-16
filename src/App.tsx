@@ -32,6 +32,8 @@ import { FreeApiModal } from './components/FreeApiModal';
 import { TaskHistoryList } from './components/TaskHistoryList';
 import { OfficeActivityFeed } from './components/OfficeActivityFeed';
 import { UnifiedAiSearchHub } from './components/UnifiedAiSearchHub';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { MobileTeamDrawer } from './components/MobileTeamDrawer';
 
 // Recommendation Presets for each of the 10 Specialized Agents
 const AGENT_RECOMMENDATIONS: Record<string, { label: string; prompt: string; icon: string }> = {
@@ -239,6 +241,33 @@ export default function App() {
   const [directCommandPrompt, setDirectCommandPrompt] = useState<string>('');
   const [preselectedAgentForTask, setPreselectedAgentForTask] = useState<Agent | null>(null);
   const [viewMode, setViewMode] = useState<'3d' | '2.5d' | 'cards'>('3d');
+  const [isMobileTeamDrawerOpen, setIsMobileTeamDrawerOpen] = useState(false);
+
+  const scrollToOffice = () => {
+    const el = document.getElementById('office-3d-viewport') || document.querySelector('canvas');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const scrollToSearch = () => {
+    const el = document.getElementById('unified-ai-search-hub');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleMobileZoomToAgent = (agent: Agent) => {
+    if (viewMode !== '3d') setViewMode('3d');
+    window.dispatchEvent(
+      new CustomEvent('office-zoom-to-agent', {
+        detail: { agentId: agent.id, mode: 'super' }
+      })
+    );
+    setTimeout(() => {
+      scrollToOffice();
+    }, 120);
+  };
 
   // 1. Connection check on startup as mandated by the Firebase skill
   useEffect(() => {
@@ -553,8 +582,8 @@ export default function App() {
         activeTasksCount={tasks.filter(t => t.status === 'in_progress').length}
       />
 
-      {/* Main Container - Full Width Edge to Edge */}
-      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-5 space-y-5">
+      {/* Main Container - Full Width Edge to Edge with Safe Mobile Bottom Padding */}
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-4 sm:space-y-5 pb-24 sm:pb-8">
         
         {/* Guest / Demo Notice Banner (if not logged in) */}
         {!user && (
@@ -591,41 +620,44 @@ export default function App() {
         {/* 3D Isometric Dollhouse Virtual Office (Viral View) & Mode Switcher */}
         <section className="space-y-3">
           {/* View Mode Switcher Header */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Perspektif Kantor:
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider hidden xs:inline">
+                Perspektif:
               </span>
               <div className="flex items-center bg-white p-1 rounded-xl border border-slate-200 shadow-xs text-xs">
                 <button
                   onClick={() => setViewMode('3d')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold transition-all ${
                     viewMode === '3d'
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>🏢 3D Gedung Kantor (Viral Dollhouse)</span>
+                  <span>🏢 3D</span>
+                  <span className="hidden sm:inline">Gedung Kantor</span>
                 </button>
                 <button
                   onClick={() => setViewMode('2.5d')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold transition-all ${
                     viewMode === '2.5d'
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>🎮 Simulasi Lantai 2.5D</span>
+                  <span>🎮 2.5D</span>
+                  <span className="hidden sm:inline">Simulasi Lantai</span>
                 </button>
                 <button
                   onClick={() => setViewMode('cards')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold transition-all ${
                     viewMode === 'cards'
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>📋 Tampilan Meja & Kartu</span>
+                  <span>📋 Meja</span>
+                  <span className="hidden sm:inline">& Kartu</span>
                 </button>
               </div>
             </div>
@@ -888,6 +920,34 @@ export default function App() {
           onClose={() => setIsDocsModalOpen(false)}
         />
       )}
+
+      {/* Mobile Bottom Navigation Bar (Thumb Friendly for Phones) */}
+      <MobileBottomNav
+        currentViewMode={viewMode}
+        onSelectViewMode={(m) => setViewMode(m)}
+        onOpenDirectCommand={() => {
+          setDirectCommandAgent(null);
+          setIsDirectCommandModalOpen(true);
+        }}
+        onOpenNewTask={() => handleOpenDispatch()}
+        onOpenTeamDrawer={() => setIsMobileTeamDrawerOpen(true)}
+        onScrollToSearch={scrollToSearch}
+        onScrollToOffice={scrollToOffice}
+        activeTasksCount={tasks.filter(t => t.status === 'in_progress').length}
+        agents={agents}
+      />
+
+      {/* Mobile Team Drawer (Bottom Sheet) */}
+      <MobileTeamDrawer
+        isOpen={isMobileTeamDrawerOpen}
+        onClose={() => setIsMobileTeamDrawerOpen(false)}
+        agents={agents}
+        onZoomToAgent={handleMobileZoomToAgent}
+        onDirectCommand={(ag) => {
+          setDirectCommandAgent(ag);
+          setIsDirectCommandModalOpen(true);
+        }}
+      />
     </div>
   );
 }

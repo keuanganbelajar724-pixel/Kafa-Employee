@@ -63,18 +63,18 @@ export const ProviderSettingsModal: React.FC<ProviderSettingsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-3xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden my-auto sm:my-6 max-h-[92vh] flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50/80">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 border border-blue-200">
-              <Cpu className="h-5 w-5" />
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-slate-200 bg-slate-50/80 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 border border-blue-200 shrink-0">
+              <Cpu className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <h2 className="text-lg font-extrabold text-slate-900">Status API Provider & Konfigurasi AI</h2>
-              <p className="text-xs text-slate-500 font-medium">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-extrabold text-slate-900 truncate">Status API Provider AI</h2>
+              <p className="text-[11px] text-slate-500 font-medium hidden xs:block truncate">
                 Arsitektur multi-provider dengan penanganan kuota, retry otomatis, dan fallback aman.
               </p>
             </div>
@@ -89,7 +89,7 @@ export const ProviderSettingsModal: React.FC<ProviderSettingsModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-white">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 bg-white">
           
           {/* Security Notice Box */}
           <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900">

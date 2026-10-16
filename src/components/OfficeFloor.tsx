@@ -260,10 +260,10 @@ export const OfficeFloor: React.FC<OfficeFloorProps> = ({
               }`}
             >
               {fl === 'Semua' 
-                ? '🏢 Semua (10 Karyawan)' 
+                ? '🏢 Semua (10)' 
                 : fl === 'L1' 
-                ? '🏛️ Lantai 1: Dasar (Paling Luas - 6 Karyawan)' 
-                : '🌟 Lantai 2: Mezzanine (Ruang Khusus - 4 Karyawan)'}
+                ? '🏛️ Lantai 1 (8 Agen)' 
+                : '🌟 Lantai 2 (CEO & Lab)'}
             </button>
           ))}
         </div>
